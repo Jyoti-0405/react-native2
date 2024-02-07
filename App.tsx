@@ -1,118 +1,88 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from "react";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ContactListScreen from "./src/screens/ContactListScreen";
+import CreateContactScreen from "./src/screens/CreateContactScreen";
+import UpdateContactScreen from "./src/screens/UpdateContactScreen";
+import FavoriteContactListScreen from "./src/screens/FavoriteContactListScreen";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { Text, TouchableOpacity } from "react-native";
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createStackNavigator();
+const drawer = createDrawerNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+function DrawerNavigation() {
+    return (
+        <drawer.Navigator
+            screenOptions={{
+                headerTitleAlign: "center", // Aligns titles in the middle
+            }}
+        >
+            <drawer.Screen
+                name="ContactList"
+                component={ContactListScreen}
+                options={{ title: "Contact List" }}
+            />
+            <drawer.Screen
+                name="FavoriteContactList"
+                component={FavoriteContactListScreen}
+                options={{ title: "Favorite Contacts" }}
+            />
+        </drawer.Navigator>
+    );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+    const [isFavorite, setIsFavorite] = useState(false);
+    const addScreenOptions = ({ navigation }: any) => ({
+        title: "Add New Contact",
+    });
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+    const updateScreenOptions = ({ navigation }: any) => ({
+        title: "Update Contact",
+        headerRightProps: { navigation },
+    });
+    return (
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="ContactList">
+                <Stack.Screen
+                    name="DrawerNavigation"
+                    component={DrawerNavigation}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ContactList"
+                    component={ContactListScreen}
+                    options={{
+                        title: "Contact List",
+                    }}
+                />
+                <Stack.Screen
+                    name="CreateContact"
+                    component={CreateContactScreen}
+                    options={addScreenOptions}
+                    initialParams={{ isFavorite, setIsFavorite }}
+                />
+                <Stack.Screen
+                    name="UpdateContact"
+                    component={UpdateContactScreen}
+                    options={updateScreenOptions}
+                    initialParams={{ isFavorite, setIsFavorite }}
+                />
+                <Stack.Screen
+                    name="FavoriteContactList"
+                    component={FavoriteContactListScreen}
+                    options={{
+                        title: "Favorite Contact List",
+                    }}
+                />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+};
 
 export default App;
